@@ -1,53 +1,53 @@
+'use strict';
+
 function Thermostat() {
-  this._MINIMUM_TEMPERATURE = 10;
-  this._temperature = 20;
-  this._power_saving_mode = true;
+  this.DEFAULT_TEMPERATURE = 20;
+  this.temperature = this.DEFAULT_TEMPERATURE;
+  this.powerSavingMode = true;
+  this.MINIMUM_TEMPERATURE = 10;
+  this.MAXIMUM_TEMPERATURE_PSM_ON = 25;
+  this.MAXIMUM_TEMPERATURE_PSM_OFF = 32;
+  this.LOW_USAGE_THRESHOLD = 18;
+  this.MID_USAGE_THRESHOLD = 25;
 };
 
-Thermostat.prototype.temperature = function() {
-  return this._temperature;
+Thermostat.prototype.getTemperature = function() {
+  return this.temperature;
 };
 
-Thermostat.prototype.power_saving_mode = function() {
-  return this._power_saving_mode;
+Thermostat.prototype.isPowerSavingModeOn = function() {
+  return this.powerSavingMode;
 };
 
-Thermostat.prototype.set_power_saving_mode = function(true_or_false) {
-  this._power_saving_mode = true_or_false;
+Thermostat.prototype.setPowerSavingMode = function(trueOrFalse) {
+  this.powerSavingMode = trueOrFalse;
 };
 
-Thermostat.prototype._maximum_temperature = function() {
-  if (this._power_saving_mode) {
-    return 25;
+Thermostat.prototype.up = function(number = 1) {
+  var RELEVANT_MAX = this.powerSavingMode ? this.MAXIMUM_TEMPERATURE_PSM_ON : this.MAXIMUM_TEMPERATURE_PSM_OFF;
+  if (this.temperature + number < RELEVANT_MAX) {
+    this.temperature += number;
   } else {
-    return 32;
+    this.temperature = RELEVANT_MAX;
   }
 };
 
-Thermostat.prototype.up = function(number) {
-  if ((this._temperature + number) < this._maximum_temperature()) {
-    this._temperature += number;
+Thermostat.prototype.down = function(number = 1) {
+  if (this.temperature - number > this.MINIMUM_TEMPERATURE) {
+    this.temperature -= number;
   } else {
-    this._temperature = this._maximum_temperature();
+    this.temperature = this.MINIMUM_TEMPERATURE;
   }
 };
 
-Thermostat.prototype.down = function(number) {
-  if ((this._temperature - number) > this._MINIMUM_TEMPERATURE) {
-    this._temperature -= number;
-  } else {
-    this._temperature = this._MINIMUM_TEMPERATURE;
-  }
+Thermostat.prototype.resetTemperature = function() {
+  this.temperature = this.DEFAULT_TEMPERATURE;
 };
 
-Thermostat.prototype.reset_temperature = function() {
-  this._temperature = 20;
-};
-
-Thermostat.prototype.energy_usage = function() {
-  if (this._temperature < 18) {
+Thermostat.prototype.energyUsage = function() {
+  if (this.temperature < this.LOW_USAGE_THRESHOLD) {
     return "low-usage";
-  } else if (this._temperature < 25) {
+  } else if (this.temperature < this.MID_USAGE_THRESHOLD) {
     return "medium-usage";
   } else {
     return "high-usage";
